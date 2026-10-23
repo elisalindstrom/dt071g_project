@@ -4,7 +4,7 @@ namespace BloodTestAnalyzer
 {
     public class Biomarker
     {
-        public string? Name { get; set; }
+        public string Name { get; set; } = "";
         // Enhet biomarkören mäts i
         public string? Unit { get; set; }
         // Vårdens referensintervaller
