@@ -1,4 +1,4 @@
-// Biomarkörers referensintervaller
+// Klass för biomarkörers referensintervaller
 
 namespace BloodTestAnalyzer
 {
@@ -36,5 +36,17 @@ namespace BloodTestAnalyzer
                 OptimalMax = 650
             }
         };
+
+        // Hämta en specifik biomarkör
+        public Biomarker? GetSpecificBiomarker(string name)
+        {
+            return biomarkers.FirstOrDefault(b => b.Name == name);
+        }
+
+        // Hämtar hela listan med biomarkörer
+        public List<Biomarker> GetBiomarkers()
+        {
+            return biomarkers;
+        }
     }
 }

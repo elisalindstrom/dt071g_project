@@ -5,7 +5,6 @@ namespace BloodTestAnalyzer
     public interface IBloodTestStorage
     {
         List<TestResult> Load();
-
         void Save(List<TestResult> results);
     }
 }
