@@ -1,13 +1,15 @@
+// Jämför användarens provsvar med vårdens och det optimala referensintervallet
+
 namespace BloodTestAnalyzer
 {
     public class TestAnalyzer
     {
-        // Jämför användarens provsvar med vårdens och det optimala referensintervallet
         public string AnalyzeResult(TestResult result, Biomarker biomarker)
         {
             string referenceAnalysis;
             string optimalAnalysis;
 
+            // Provsvar jämförs med vårdens referensintervall
             if (result.Value < biomarker.ReferenceMin)
                 referenceAnalysis = "Värdet är lågt och ligger under vårdens referensintervall.";
             else if (result.Value > biomarker.ReferenceMax)
@@ -15,6 +17,7 @@ namespace BloodTestAnalyzer
             else
                 referenceAnalysis = "Värdet är inom vårdens referensintervall.";
 
+            // Provsvar jämförs med optimala värden
             if (result.Value < biomarker.OptimalMin)
                 optimalAnalysis = "Värdet ligger under det optimala intervallet.";
             else if (result.Value > biomarker.OptimalMax)

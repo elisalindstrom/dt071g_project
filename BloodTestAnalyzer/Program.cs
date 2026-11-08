@@ -14,6 +14,7 @@ namespace BloodTestAnalyzer
     {
         static void Main(string[] args)
         {
+            // Skapar objekt av nödvändiga klasser
             IBloodTestStorage storage = new JsonBloodTestStorage("bloodtests.json");
             BloodTestService bloodTestService = new BloodTestService(storage);
             ReferenceRanges referenceRanges = new ReferenceRanges();
@@ -21,6 +22,7 @@ namespace BloodTestAnalyzer
 
             string? choice;
 
+            // Loop för att visa menyn så länge användaren inte avslutar programmet
             do
             {
                 Console.Clear();
@@ -32,6 +34,7 @@ namespace BloodTestAnalyzer
                     .AddChoices("Registrera nytt provsvar", "Hantera sparade provsvar", "[red3]Avsluta[/]")
                 );
 
+                // Hanterar menyval
                 switch (choice)
                 {
                     case "Registrera nytt provsvar":
@@ -70,7 +73,7 @@ namespace BloodTestAnalyzer
 
                         // Sparar testresultatet
                         TestResult testResult = bloodTestService.AddResult(nameInput, valueInput, date);
-                        // Hämtar rätt biomarkör från användarens input
+                        // Hämtar rätt biomarkör utifrån användarens val
                         Biomarker? biomarker = referenceRanges.GetSpecificBiomarker(nameInput);
 
                         // Spinner
@@ -81,6 +84,7 @@ namespace BloodTestAnalyzer
                             });
 
                         // Analysresultat
+                        // Kontrollerar att biomarker inte är null
                         if (biomarker != null)
                         {
                             Console.Clear();
@@ -104,7 +108,7 @@ namespace BloodTestAnalyzer
 
                             AnsiConsole.Write(panel);
 
-                            string subChoice = AnsiConsole.Prompt(
+                            AnsiConsole.Prompt(
                                 new SelectionPrompt<string>()
                                 .HighlightStyle(new Style(Color.Purple4))
                                 .AddChoices("Tillbaka till huvudmenyn")
@@ -114,9 +118,10 @@ namespace BloodTestAnalyzer
                         break;
 
                     case "Hantera sparade provsvar":
+                        // Kontrollerar om det finns sparade provsvar
                         if (bloodTestService.GetResults().Count > 0)
                         {
-                            // Skapar ny tabell med kolumner
+                            // Skapar tabell med kolumner
                             var table = new Table()
                             .Border(TableBorder.Rounded)
                             .Title("[bold black]SPARADE PROVSVAR[/]")
@@ -134,6 +139,7 @@ namespace BloodTestAnalyzer
                                 table.AddRow(i++.ToString(), savedTestResult.Name, $"{savedTestResult.Value} {savedBiomarker?.Unit}", savedTestResult.Date.ToString("yyyy-MM-dd"));
 
                             }
+
                             AnsiConsole.Write(table);
 
                             string subChoice = AnsiConsole.Prompt(
@@ -150,6 +156,7 @@ namespace BloodTestAnalyzer
                                     .ValidationErrorMessage("Ange ett giltigt heltal.")
                                     .Validate(value =>
                                     {
+                                        // Kontrollerar att angett index finns
                                         if (value < 0 || value >= bloodTestService.GetResults().Count)
                                         {
                                             return ValidationResult.Error("Felaktigt index");
@@ -161,6 +168,7 @@ namespace BloodTestAnalyzer
                                     })
                                 );
 
+                                // Tar bort provsvaret med valt index
                                 bloodTestService.DelResult(index);
                                 AnsiConsole.MarkupLine("[green]Provsvar borttaget ✓[/]");
                                 Console.ReadKey();
@@ -178,6 +186,7 @@ namespace BloodTestAnalyzer
                         break;
                 }
             }
+            // Visar huvudmenyn så länge användaren inte väljer Avsluta
             while (choice != "[red3]Avsluta[/]");
         }
     }

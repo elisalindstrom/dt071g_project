@@ -1,4 +1,4 @@
-// Klass för biomarkörers referensintervaller
+// Klass för biomarkörer och deras referensintervall
 
 namespace BloodTestAnalyzer
 {

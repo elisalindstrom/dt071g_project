@@ -1,3 +1,5 @@
+// Hanterar registrering, borttagning och hämtning av provsvar
+
 namespace BloodTestAnalyzer
 {
     public class BloodTestService
@@ -5,7 +7,7 @@ namespace BloodTestAnalyzer
         private readonly IBloodTestStorage storage;
         private List<TestResult> results;
 
-        // Konstruktor som hämtar tidigare sparade provsvar från storage
+        // Konstruktor som hämtar tidigare sparade provsvar från lagringen
         public BloodTestService(IBloodTestStorage storage)
         {
             this.storage = storage;
@@ -15,12 +17,14 @@ namespace BloodTestAnalyzer
         // Skapar och sparar nytt provsvar
         public TestResult AddResult(string name, double value, DateOnly date)
         {
-            TestResult testResult = new TestResult();
-            testResult.Name = name;
-            testResult.Value = value;
-            testResult.Date = date;
+            TestResult testResult = new TestResult()
+            {
+                Name = name,
+                Value = value,
+                Date = date
+            };
 
-            // Lägger till och sparar listan
+            // Lägger till provsvar och sparar listan
             results.Add(testResult);
             storage.Save(results);
 

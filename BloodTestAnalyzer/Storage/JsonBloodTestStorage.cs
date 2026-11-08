@@ -28,7 +28,7 @@ namespace BloodTestAnalyzer
             return JsonSerializer.Deserialize<List<TestResult>>(json) ?? new List<TestResult>();
         }
 
-        // Sparar inlägg i JSON-filen
+        // Sparar provsvar i JSON-filen
         public void Save(List<TestResult> results)
         {
             // Konverterar listans objekt till JSON
