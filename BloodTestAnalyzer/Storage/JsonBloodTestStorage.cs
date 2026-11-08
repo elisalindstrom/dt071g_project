@@ -17,7 +17,7 @@ namespace BloodTestAnalyzer
         // Laddar sparade resultat från JSON-filen
         public List<TestResult> Load()
         {
-            // Kontrollerar om filen finns, annars returneras tom lista
+            // Kontrollerar om filen finns
             if (!File.Exists(jsonFile))
                 return new List<TestResult>();
 
@@ -31,7 +31,7 @@ namespace BloodTestAnalyzer
         // Sparar inlägg i JSON-filen
         public void Save(List<TestResult> results)
         {
-            // Konverterar listans inlägg till JSON
+            // Konverterar listans objekt till JSON
             string json = JsonSerializer.Serialize(results);
 
             // Skriver innehållet till filen

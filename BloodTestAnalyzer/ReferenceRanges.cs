@@ -10,10 +10,12 @@ namespace BloodTestAnalyzer
             {
                 Name = "Hemoglobin",
                 Unit = "g/L",
+                // Vårdens referensintervall
                 ReferenceMin = 120,
                 ReferenceMax = 155,
-                OptimalMin = 130,
-                OptimalMax = 140
+                // Optimala värden
+                OptimalMin = 135,
+                OptimalMax = 160
             },
 
             new Biomarker
@@ -22,8 +24,8 @@ namespace BloodTestAnalyzer
                 Unit = "μg/L",
                 ReferenceMin = 10,
                 ReferenceMax = 150,
-                OptimalMin = 50,
-                OptimalMax = 100
+                OptimalMin = 30,
+                OptimalMax = 120
             },
 
             new Biomarker
@@ -32,12 +34,12 @@ namespace BloodTestAnalyzer
                 Unit = "pmol/L",
                 ReferenceMin = 145,
                 ReferenceMax = 650,
-                OptimalMin = 250,
-                OptimalMax = 650
+                OptimalMin = 375,
+                OptimalMax = 700
             }
         };
 
-        // Hämta en specifik biomarkör
+        // Hämtar en specifik biomarkör
         public Biomarker? GetSpecificBiomarker(string name)
         {
             return biomarkers.FirstOrDefault(b => b.Name == name);

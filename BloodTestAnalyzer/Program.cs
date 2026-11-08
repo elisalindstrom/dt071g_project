@@ -17,6 +17,7 @@ namespace BloodTestAnalyzer
             IBloodTestStorage storage = new JsonBloodTestStorage("bloodtests.json");
             BloodTestService bloodTestService = new BloodTestService(storage);
             ReferenceRanges referenceRanges = new ReferenceRanges();
+            TestAnalyzer testAnalyzer = new TestAnalyzer();
 
             string? choice;
 
@@ -28,13 +29,13 @@ namespace BloodTestAnalyzer
                     new SelectionPrompt<string>()
                     .Title("[bold Purple4]BLODPROVSANALYS FÖR KVINNOR[/]")
                     .HighlightStyle(new Style(Color.Purple4))
-                    .AddChoices("Registrera nytt provsvar", "Visa sparade provsvar", "Ta bort provsvar", "[red3]Avsluta[/]")
+                    .AddChoices("Registrera nytt provsvar", "Hantera sparade provsvar", "[red3]Avsluta[/]")
                 );
 
                 switch (choice)
                 {
                     case "Registrera nytt provsvar":
-                        // Typ av prov
+                        // Validering
                         string nameInput = AnsiConsole.Prompt(
                             new SelectionPrompt<string>()
                             .Title("Välj provtyp")
@@ -53,6 +54,7 @@ namespace BloodTestAnalyzer
                             new TextPrompt<string>("Ange provdatum (ÅÅÅÅ-MM-DD): ")
                             .Validate(input =>
                             {
+                                // Kontrollerar att datumformatet är korrekt
                                 if (DateOnly.TryParseExact(input, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out _))
                                 {
                                     return ValidationResult.Success();
@@ -66,7 +68,9 @@ namespace BloodTestAnalyzer
 
                         DateOnly date = DateOnly.ParseExact(dateInput, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
 
+                        // Sparar testresultatet
                         TestResult testResult = bloodTestService.AddResult(nameInput, valueInput, date);
+                        // Hämtar rätt biomarkör från användarens input
                         Biomarker? biomarker = referenceRanges.GetSpecificBiomarker(nameInput);
 
                         // Spinner
@@ -81,8 +85,10 @@ namespace BloodTestAnalyzer
                         {
                             Console.Clear();
 
-                            string resultAnalysis = bloodTestService.AnalyzeResult(testResult, biomarker);
+                            // Anropar analysmetod
+                            string resultAnalysis = testAnalyzer.AnalyzeResult(testResult, biomarker);
 
+                            // Skriver ut resultatet i en panel
                             var panel = new Panel(
                                 $"[bold]Provtyp:[/] {testResult.Name}\n" +
                                 $"[bold]Provresultat:[/] {testResult.Value} {biomarker.Unit}\n" +
@@ -97,52 +103,23 @@ namespace BloodTestAnalyzer
                             .RoundedBorder();
 
                             AnsiConsole.Write(panel);
-                            Console.ReadKey();
+
+                            string subChoice = AnsiConsole.Prompt(
+                                new SelectionPrompt<string>()
+                                .HighlightStyle(new Style(Color.Purple4))
+                                .AddChoices("Tillbaka till huvudmenyn")
+                            );
                         }
 
                         break;
 
-                    case "Visa sparade provsvar":
-                        // Om det finns sparade provsvar visas dessa vid programstart
+                    case "Hantera sparade provsvar":
                         if (bloodTestService.GetResults().Count > 0)
                         {
                             // Skapar ny tabell med kolumner
                             var table = new Table()
                             .Border(TableBorder.Rounded)
-                            .Title("[bold]SPARADE PROVSVAR[/]")
-                            .AddColumn("[bold]Nr[/]")
-                            .AddColumn("[bold]Biomarkör[/]")
-                            .AddColumn("[bold]Provresultat[/]")
-                            .AddColumn("[bold]Datum[/]");
-
-                            int i = 0;
-
-                            // Skriver ut alla sparade provsvar i tabellen
-                            foreach (TestResult savedTestResult in bloodTestService.GetResults())
-                            {
-                                Biomarker? savedBiomarker = referenceRanges.GetSpecificBiomarker(savedTestResult.Name);
-                                table.AddRow(i++.ToString(), savedTestResult.Name, $"{savedTestResult.Value} {savedBiomarker?.Unit}", savedTestResult.Date.ToString("yyyy-MM-dd"));
-
-                            }
-                            AnsiConsole.Write(table);
-                            Console.ReadKey();
-                        }
-                        else
-                        {
-                            Console.WriteLine("Det finns inga sparade provresult");
-                            Console.ReadKey();
-
-                        }
-
-                        break;
-
-                    case "Ta bort provsvar":
-                        if (bloodTestService.GetResults().Count > 0)
-                        {
-                            // Skapar ny tabell med kolumner
-                            var table = new Table()
-                            .Border(TableBorder.Rounded)
-                            .Title("[bold]SPARADE PROVSVAR[/]")
+                            .Title("[bold black]SPARADE PROVSVAR[/]")
                             .AddColumn("[bold]Nr[/]")
                             .AddColumn("[bold]Biomarkör[/]")
                             .AddColumn("[bold]Provresultat[/]")
@@ -159,23 +136,35 @@ namespace BloodTestAnalyzer
                             }
                             AnsiConsole.Write(table);
 
-                            Console.Write("Ange nr för det provsvar du vill ta bort: ");
-                            string? index = Console.ReadLine();
+                            string subChoice = AnsiConsole.Prompt(
+                                new SelectionPrompt<string>()
+                                .Title("[bold]Välj åtgärd[/]")
+                                .HighlightStyle(new Style(Color.Purple4))
+                                .AddChoices("Ta bort ett provsvar", "Tillbaka till huvudmenyn")
+                            );
 
-                            // Kontrollerar att index inte är tomt
-                            if (!String.IsNullOrEmpty(index))
-                                try
-                                {   // Konverterar string till en int och tar bort valt index
-                                    bloodTestService.DelResult(Convert.ToInt32(index));
-                                    AnsiConsole.MarkupLine("[green]Provsvar borttaget ✓[/]");
-                                    Console.ReadKey();
-                                }
-                                // Om angivet index är felaktigt/inte finns
-                                catch (Exception)
-                                {
-                                    Console.WriteLine("Felaktigt index");
-                                    Console.ReadKey();
-                                }
+                            if (subChoice == "Ta bort ett provsvar")
+                            {
+                                int index = AnsiConsole.Prompt(
+                                    new TextPrompt<int>("Ange nr för det provsvar du vill ta bort:")
+                                    .ValidationErrorMessage("Ange ett giltigt heltal.")
+                                    .Validate(value =>
+                                    {
+                                        if (value < 0 || value >= bloodTestService.GetResults().Count)
+                                        {
+                                            return ValidationResult.Error("Felaktigt index");
+                                        }
+                                        else
+                                        {
+                                            return ValidationResult.Success();
+                                        }
+                                    })
+                                );
+
+                                bloodTestService.DelResult(index);
+                                AnsiConsole.MarkupLine("[green]Provsvar borttaget ✓[/]");
+                                Console.ReadKey();
+                            }
                         }
                         else
                         {
