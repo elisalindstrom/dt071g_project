@@ -5,7 +5,7 @@ Konsolapplikation utvecklad i C# som analyserar kvinnors provresultat från blod
 Nedklonat projekt körs med kommando dotnet run.
 
 ## Användning
-Användaren kan lägga till och ta bort provsvar som lagras lokalt i en JSON-fil. Första gången ett provsvar sparas skapas lagringsfilen. När användaren lägger till ett nytt provsvar analyseras värdet utifrån de två referensintervallen.
+Användaren kan lägga till och ta bort provsvar som lagras lokalt i en JSON-fil. Första gången ett provsvar sparas skapas lagringsfilen. När användaren lägger till ett nytt provsvar analyseras värdet utifrån de två intervallen.
 
 ## Projektstruktur
 ```bash
