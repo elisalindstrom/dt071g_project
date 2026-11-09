@@ -1,4 +1,4 @@
-// Jämför användarens provsvar med vårdens och det optimala referensintervallet
+// Jämför användarens provsvar med vårdens referensintervallet och det optimala intervallet
 
 namespace BloodTestAnalyzer
 {

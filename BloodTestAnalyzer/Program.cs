@@ -78,6 +78,7 @@ namespace BloodTestAnalyzer
 
                         // Spinner
                         AnsiConsole.Status()
+                        .SpinnerStyle(new Style(Color.Purple4))
                             .Start("Laddar analysresultat...", ctx =>
                             {
                                 Thread.Sleep(3000);
@@ -98,7 +99,7 @@ namespace BloodTestAnalyzer
                                 $"[bold]Provresultat:[/] {testResult.Value} {biomarker.Unit}\n" +
                                 $"[bold]Datum för prov:[/] {testResult.Date}\n\n" +
                                 $"[bold]Vårdens referensintervall:[/] {biomarker.ReferenceMin}-{biomarker.ReferenceMax} {biomarker.Unit}\n" +
-                                $"[bold]Optimalt referensintervall:[/] {biomarker.OptimalMin}-{biomarker.OptimalMax} {biomarker.Unit}\n" +
+                                $"[bold]Optimalt intervall:[/] {biomarker.OptimalMin}-{biomarker.OptimalMax} {biomarker.Unit}\n" +
                                 $"[purple4]{resultAnalysis}[/]\n\n" +
                                 "Applikationen ställer inga medicinska diagnoser"
                             )
@@ -132,8 +133,8 @@ namespace BloodTestAnalyzer
 
                             int i = 0;
 
-                            // Skriver ut alla sparade provsvar i tabellen
-                            foreach (TestResult savedTestResult in bloodTestService.GetResults())
+                            // Skriver ut alla sparade provsvar i tabellen, sortera efter datum
+                            foreach (TestResult savedTestResult in bloodTestService.GetResults().OrderByDescending(result => result.Date))
                             {
                                 Biomarker? savedBiomarker = referenceRanges.GetSpecificBiomarker(savedTestResult.Name);
                                 table.AddRow(i++.ToString(), savedTestResult.Name, $"{savedTestResult.Value} {savedBiomarker?.Unit}", savedTestResult.Date.ToString("yyyy-MM-dd"));
